@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+    clickhouse:
+        image: bitnami/clickhouse:latest
+        container_name: clickhouse
+        ports:
+            - "8123:8123" # HTTP порт
+            - "9000:9000" # Native порт
+        environment:
+            - CLICKHOUSE_USER=default
+            - CLICKHOUSE_PASSWORD=password
+            - CLICKHOUSE_DATABASE=default
+        volumes:
+            - clickhouse_data:/bitnami/clickhouse
+
+volumes:
+    clickhouse_data:
