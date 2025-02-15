@@ -24,6 +24,14 @@
         .swal2-container {
             z-index: 150000 !important;
         }
+        .daterangepicker {
+            z-index: 99999 !important; /* Поверх confirm-окна */
+            left: auto !important; /* Отключаем авто-расчет позиции */
+            right: 470px !important; /* Смещаем календарь левее */
+            top: 450px !important; /* Смещаем календарь левее */
+        }
+
+
     </style>
 
 
@@ -264,7 +272,7 @@
                         '</div>' +
                         '<div class="form-group">' +
                         '<label>Камчиликни бартараф этиш муддати</label>' +
-                        `<input type="date" name="deadline" class="form-control" value="${rowData.deadline ? rowData.deadline.split('-').reverse().join('-') : ''}" required>` +
+                        `<input type="text" name="deadline" class="form-control" value="${rowData.deadline ? rowData.deadline.split('-').join('-') : ''}" pattern="\d{2}-\d{2}-\d{4}" placeholder="DD-MM-YYYY" required>` +
                         '</div>' +
                         '</form>',
                     buttons: {
@@ -294,6 +302,46 @@
                                     });
                                     return false;
                                 }
+
+                                let deadline = $('input[name="deadline"]').val();
+                                let dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+
+                                if (!dateRegex.test(deadline)) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Камчиликни бартараф этиш муддати DD-MM-YYYY форматда болиши керак!',
+                                    });
+                                    return false;
+                                }
+
+                                let parts = deadline.split("-");
+                                let deadlineDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+                                let today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                deadlineDate.setHours(0, 0, 0, 0);
+
+                                if (deadlineDate < today) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Камчиликни бартараф этиш муддати бугунги кунгача болиши мумкин емас!',
+                                    });
+                                    return false;
+                                }
+
+
+                                formData.forEach(field => {
+                                    if (field.name === "deadline" && field.value) {
+                                        let parts = field.value.split("-");
+                                        if (parts.length === 3) {
+                                            field.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                                        }
+                                    }
+                                });
+
+
                                 $.ajax({
                                     url: '/asutp/edit-record',
                                     type: 'POST',
@@ -324,6 +372,19 @@
                             text: 'Отмена',
                             btnClass: 'btn-danger'
                         }
+                    },
+                    onContentReady: function () {
+                        $('input[name="deadline"]').daterangepicker({
+                            singleDatePicker: true,
+                            autoUpdateInput: false,
+                            locale: {
+                                format: 'DD-MM-YYYY',
+                                applyLabel: "Танлаш",
+                                cancelLabel: "Бекор қилиш"
+                            }
+                        }).on('apply.daterangepicker', function (ev, picker) {
+                            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+                        });
                     }
                 });
             });
@@ -642,6 +703,7 @@
     </script>
 
     <script>
+
         $(document).ready(function () {
             $('#createRequest').on('click', function () {
                 let table = $('#listok-table').DataTable();
@@ -672,7 +734,7 @@
                         '</div>' +
                         '<div class="form-group">' +
                         '<label>Камчиликни бартараф этиш муддати:</label>' +
-                        '<input type="date" name="deadline" class="form-control" required>' +
+                        '<input type="text" name="deadline" class="form-control" required pattern="\d{2}-\d{2}-\d{4}" placeholder="DD-MM-YYYY" required>' +
                         '</div>' +
                         '</form>',
                     buttons: {
@@ -702,21 +764,44 @@
                                 }
 
                                 let deadline = $('input[name="deadline"]').val();
-                                let today = new Date();
-                                let deadlineDate = new Date(deadline);
-                                today.setHours(0, 0, 0, 0);
-                                deadlineDate.setHours(0, 0, 0, 0);
-                                if (deadlineDate < today) {
+                                let dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+
+                                if (!dateRegex.test(deadline)) {
                                     Swal.fire({
-                                        icon: 'error',
-                                        title: 'Ошибка',
-                                        text: 'Срок не может быть раньше сегодняшнего дня!',
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Камчиликни бартараф этиш муддати DD-MM-YYYY форматда болиши керак!',
                                     });
                                     return false;
                                 }
 
+                                let parts = deadline.split("-");
+                                let deadlineDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+                                let today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                deadlineDate.setHours(0, 0, 0, 0);
+
+                                if (deadlineDate < today) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Камчиликни бартараф этиш муддати бугунги кунгача болиши мумкин емас!',
+                                    });
+                                    return false;
+                                }
+
+
                                 let formData = form.serializeArray();
                                 formData.push({ name: 'roleId', value: roleId });
+                                formData.forEach(field => {
+                                    if (field.name === "deadline" && field.value) {
+                                        let parts = field.value.split("-");
+                                        if (parts.length === 3) {
+                                            field.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                                        }
+                                    }
+                                });
 
                                 $.ajax({
                                     url: '/asutp/create-record',
@@ -748,6 +833,19 @@
                             text: 'Оркага',
                             btnClass: 'btn-danger'
                         }
+                    },
+                    onContentReady: function () {
+                        $('input[name="deadline"]').daterangepicker({
+                            singleDatePicker: true,
+                            autoUpdateInput: false,
+                            locale: {
+                                format: 'DD-MM-YYYY',
+                                applyLabel: "Танлаш",
+                                cancelLabel: "Бекор қилиш"
+                            }
+                        }).on('apply.daterangepicker', function (ev, picker) {
+                            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+                        });
                     }
                 });
             });
