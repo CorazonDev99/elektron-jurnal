@@ -1,102 +1,264 @@
-@extends('layouts.guest')
-@section('title', 'Kirish')
-@section('styles')
-    <link rel="stylesheet" href="/assets/face-detection/style/face-detection.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src='/assets/face-detection/js/face-api.min.js'></script>
-    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
-    <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Kirish</title>
 
-        .card{
-            width: 600px;
-            height: 500px;
+    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css"/>
 
+    <style media="screen">
+        *,
+        *:before,
+        *:after{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-image: url('assets/images/login.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
-        .card-f {
+        .background{
+            width: 430px;
+            height: 520px;
+            position: absolute;
+            transform: translate(-50%,-50%);
+            left: 50%;
+            top: 50%;
+        }
+        .background .shape{
+            height: 200px;
+            width: 200px;
+            position: absolute;
+            border-radius: 50%;
+        }
+        .shape:first-child{
+            background: linear-gradient(
+                #1845ad,
+                #23a2f6
+            );
+            left: -80px;
+            top: -80px;
+        }
+        .shape:last-child{
+            background: linear-gradient(
+                to right,
+                #ff512f,
+                #f09819
+            );
+            right: -30px;
+            bottom: -80px;
+        }
+        form{
+            height: 520px;
             width: 600px;
-            height: 500px;
+            background-color: rgba(255,255,255,0.13);
+            position: absolute;
+            transform: translate(-50%,-50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(8,7,16,0.6);
+            padding: 50px 35px;
+        }
+        form *{
+            font-family: 'Poppins',sans-serif;
+            color: #000000;
+            letter-spacing: 0.5px;
+            outline: none;
+            border: none;
+        }
+        form h3{
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        label{
+            display: block;
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        input{
+            display: block;
+            height: 50px;
+            width: 100%;
+            background-color: #e0eef3;
+            border-radius: 3px;
+            padding: 0 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+        }
+        ::placeholder{
+
+            color: #000000;
+        }
+        button{
+            margin-top: 12px;
+            width: 100%;
+            background-color: #ffffff;
+            color: #080710;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.4s ease, transform 0.4s ease; /* Анимация */
+
+        }
+        .social{
+            margin-top: 30px;
+            display: flex;
+        }
+        .social div{
+            background: red;
+            width: 150px;
+            border-radius: 3px;
+            padding: 5px 10px 10px 5px;
+            background-color: rgba(255,255,255,0.27);
+            color: #eaf0fb;
+            text-align: center;
+        }
+        .social div:hover{
+            background-color: rgba(255,255,255,0.47);
+        }
+        .social .fb{
+            margin-left: 25px;
+        }
+        .social i{
+            margin-right: 4px;
+        }
+
+        button:hover {
+            background-color: #00d0ff; /* Более тёмный синий при наведении */
+        }
+
+        button:active {
+            transform: scale(0.95); /* Эффект нажатия */
+        }
+
+
+
+    </style>
+    <style>
+        .checkbox-container {
+            display: flex;
+            align-items: center; /* Выравнивание по вертикали */
+            gap: 10px; /* Расстояние между чекбоксом и текстом */
+            font-size: 14px;
+            color: #555;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #000000;
+            transition: color 0.3s ease;
+        }
+
+        .checkbox-container label:hover {
+            color: #007bff;
+        }
+
+    </style>
+    <style>
+        .remember{
+            margin-bottom: 27px;
         }
     </style>
-@endsection
-@section('content')
-    <div class="col-md-8 col-lg-6 col-xl-5 card-f">
-        <div class="card">
+</head>
+<body>
+<form>
+    <h3 style="color: #0b0b0b">Журнал контроля</h3>
 
-            <div class="card-body p-4">
-                <div class="text-center mt-2">
-                    <h5 class="text-primary">Xush kelibsiz!</h5>
-                    <p class="text-muted">Hisobingizga kirish uchun email va parolingizni kiriting.</p>
-                </div>
-                <div class="p-2 mt-4">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <div id="login">
-                            <div class="mb-3">
-                                <label class="form-label" for="email">{{__('Email')}}</label>
-                                <input type="text" class="form-control" id="email" placeholder="Email kiriting" value="">
-                            </div>
+    <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
 
-                            <div class="mb-3">
-                                <div class="float-end">
-                                    <a href="auth-recoverpw.html" class="text-muted">Parolni unutdingizmi?</a>
-                                </div>
-                                <label class="form-label" for="password">Parol</label>
-                                <input type="password" class="form-control" id="password"
-                                       placeholder="Parol kiriting">
-                            </div>
+    <label for="username">Email</label>
+    <input type="email" placeholder="Email" id="email">
 
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="auth-remember-check">
-                                <label class="form-check-label" for="auth-remember-check">Eslab qolish</label>
-                            </div>
+    <label for="password">Password</label>
+    <input type="password" placeholder="Password" id="password">
 
-                            <div class="mt-3 text-end">
-                                <button class="btn btn-primary w-sm waves-effect waves-light" type="button"
-                                        onclick="getUser()">Kirish
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="rememberMe">
+        <div class="remember">
+            <label for="rememberMe">Запомнить меня</label>
         </div>
     </div>
 
-@endsection
+    <button class="btn-info" onclick="getUser(event)">Войти</button>
+</form>
 
-@section('scripts')
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="/assets/facedetection/jquery.facedetection.js"></script>
-    <script>
-        function getUser() {
-            let email = $('#email').val();
-            let password = $('#password').val();
+<script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
-            $.ajax({
-                url: '/api/user',
-                type: 'POST',
-                data: {
-                    email: email,
-                    password: password
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        var userId = response.user_id;
-                        window.location.href = '/dashboard?user_id=' + userId;
-                    } else {
-                        alert('User not found');
-                    }
-                },
-                error: function (jqXHR) {
-                    alert('Error: ' + jqXHR.responseJSON.message);
-                }
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const savedEmail = localStorage.getItem('email');
+        if (savedEmail) {
+            document.getElementById('email').value = savedEmail;
+            document.getElementById('rememberMe').checked = true;
+        }
+    });
+
+    function getUser(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        const _token = document.getElementById('_token').value; // Получаем CSRF-токен
+
+        if (rememberMe) {
+            localStorage.setItem('email', email);
+        } else {
+            localStorage.removeItem('email');
         }
 
-
-
-    </script>
-
-    <script src="/assets/face-detection/js/face-detection.js"></script>
-@endsection
+        $.ajax({
+            url: '/api/user',
+            type: 'POST',
+            data: {
+                email: email,
+                password: password,
+                _token: _token
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('User not found');
+                }
+            },
+            error: function (jqXHR) {
+                document.getElementById('password').value = '';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email йоки parol хато киритилган!',
+                    showConfirmButton: false,
+                    timer: 2500
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

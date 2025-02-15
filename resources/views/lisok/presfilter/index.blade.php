@@ -1,372 +1,44 @@
 @extends('layouts.app')
 
 @section('style')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <link href="{{asset('assets/mof/dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
+
+
     <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('assets/css/project.css') }}" rel="stylesheet" type="text/css"/>
     <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/css/jquery-confirm.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
-
+    <link href="{{asset('assets/mof/select.dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('assets/mof/daterangepicker.css')}}" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('assets/mof/jquery-confirm.min.css')}}" rel="stylesheet" type="text/css"/>
 
     <style>
-        #custom-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            display: none;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        .loading-overlay{
-            margin-left: 20px !important;
-            margin-bottom: 20px !important;
-        }
-        .card {
-            margin-bottom: 5px !important;
-        }
-        .line-confirm{
-            background: #00a7d0;
-        }
-        .jconfirm .jconfirm-buttons{
-            margin-right: 100px !important;
-        }
-
-        .jconfirm .jconfirm-title {
-            margin-left: 20px;
-            margin-top: 20px;
-        }
-
-        .confirm{
-            margin-top: 20px !important;
-            margin-left:60px!important;
-            width: 90%;
-        }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .css-label {
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .css-checkbox {
-            margin: 0;
-        }
-
-        .no_reviews{
-            margin-top: 300px;
-        }
-        #filter{
-            margin-left: 8px !important;
-
-        }
-        #checkout {
-            margin-left: 8px !important;
-        }
-
-        #details {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-
-        #room-index {
-            z-index: 1;
-        }
-
-        #room-show {
-            z-index: 2;
-        }
-
-        .viewed {
-            background-color: #2f3e66 !important;
-            color: #ffffff !important;
-        }
-
-        .dataTables_scrollBody {
-            overflow-y: auto;
-            height: 600px;
-        }
-
-
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .dataTables_wrapper .dataTables_paginate {
-            float: right;
-        }
-
-        .card-nav {
-            margin: 20px !important;
-
-        }
-
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
-            display: inline-block;
-            margin-right: 15px;
-            vertical-align: middle;
-        }
-
-        .dataTables_paginate {
-            white-space: nowrap;
-        }
-
-        .dataTables_length,
-        .dataTables_info,
-        .dataTables_paginate {
-            width: auto;
-        }
-
-        #listok-table{
-            cursor: pointer;
-        }
-        .data-tr{
-            text-align: left;
-        }
-
-        .modal {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal.show {
-            display: block;
-            opacity: 1;
+        .deadline-passed {
+            background-color: #fd7b7b !important;
         }
     </style>
     <style>
-        .btn-color{
-            color: #000000 !important;
-        }
-        .popup__add {
-            display: block;
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 40%;
-            height: 100vh;
-            z-index: 9999;
-            background: linear-gradient(to right, rgba(0, 167, 208, 0.05), rgba(107, 233, 255, 0.05));
-            box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(20px);
-            transform: translateX(100%);
-            transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
-            color: #000000;
-            border-left: 6px solid rgba(0, 95, 115, 0.3);
-            border-radius: 10px 0 0 10px;
-            opacity: 0.9;
+        .jconfirm {
+            z-index: 99999 !important;
         }
 
-        .popup__add.true {
-            transform: translateX(0);
-        }
-
-        .popup__add .card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
-            height: 90%;
-            margin: 5%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .popup__add .card-header {
-            background: linear-gradient(45deg, rgba(0, 95, 115, 0.7), rgba(10, 147, 150, 0.7));
-            color: rgba(255, 255, 255, 0.9);
-            padding: 1.5rem;
-            font-size: 1.6rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .popup__add .card-header button {
-            background: rgba(255, 255, 255, 0.6);
-            border: none;
-            color: rgba(0, 95, 115, 0.9);
-            font-size: 2rem;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.3s ease, transform 0.2s;
-        }
-
-        .popup__add .card-header button i {
-            color: rgba(0, 95, 115, 0.9); /* Цвет иконки */
-        }
-
-        .popup__add .card-header button:hover {
-            background: rgba(255, 0, 11, 0.8);
-            color: #fff;
-            transform: scale(1.1);
-        }
-
-        /* Для использования Font Awesome */
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
-
-
-        .popup__add .card-body {
-            padding: 2rem;
-            overflow-y: auto;
-            color: rgb(0, 0, 0);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .popup__add .card-body p {
-            padding-left: 3rem;
-            margin: 0.8rem 4px;
-            line-height: 1.7;
-            font-size: 1.1rem;
-            flex: 1 1 48%;
-        }
-
-        .popup__add .card-body p strong {
-            font-weight: bold;
-            color: rgba(0, 95, 115, 0.8);
-        }
-
-        .popup__add .card-body img {
-            margin-right: 10px;
-            vertical-align: middle;
-            border-radius: 6px;
-            box-shadow: 0 4px 10px rgb(0, 0, 0);
-        }
-
-        .popup__add .card-footer {
-            background: rgba(0, 95, 115, 0.6); /* Прозрачный футер */
-            padding: 1.2rem;
-            border-radius: 0 0 15px 15px;
-            color: rgba(255, 255, 255, 0.9);
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        .width__100 {
-            width: 100vw;
-        }
-        .width__25 {
-            width: 25vw;
-        }
-        .width__50 {
-            width: 50vw;
-        }
-        .width__75 {
-            width: 75vw;
-        }
-        .hot_key{
-            border: 1px solid #ccc;
-            border-radius: .3rem;
-            padding: 0 .2rem;
-            margin-left: .2rem;
-        }
-
-        @media  (max-width: 700px) {
-            .width__100 {
-                width: 100vw;
-            }
-            .width__25 {
-                width: 100vw;
-            }
-            .width__50 {
-                width: 100vw;
-            }
-            .width__75 {
-                width: 100vw;
-            }
+        .swal2-container {
+            z-index: 150000 !important;
         }
     </style>
-    <style>
-        .rooms{
-            margin-left: 20px !important;
-        }
-        .jconfirm-box{
-            width: 600px ;
-            padding-bottom: 20px ;
-        }
 
-
-        #icon-cont{
-            margin-right: 10px;
-        }
-
-        #context-menu {
-            position: absolute;
-            display: none;
-            z-index: 1000;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 4px;
-        }
-
-
-        #context-menu ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        #context-menu ul li {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        #context-menu ul li:hover {
-            background-color: #f0f0f0;
-        }
-
-    </style>
 @endsection
 
-@section('header_title', 'ДЦ-1')
 
 @section('script')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/js/jquery-confirm.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-    <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+
+    <script src="{{ asset('assets/mof/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('/assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+    <script src="{{ asset('assets/mof/dataTables.select.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('assets/js/pages/sweet-alerts.init.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
-
+    <script src="{{ asset('assets/mof/daterangepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/mof/jquery-confirm.min.js') }}"></script>
 
 
 
@@ -379,7 +51,7 @@
     <script>
         $(document).ready(function () {
 
-            var table = $('#lisok-table').DataTable({
+            var table = $('#listok-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -401,6 +73,7 @@
                         defaultContent: ''
                     },
                     {data: 'id', name: 'presfilter.id', searchable: false, visible: false},
+                    {data: 'user_id', name: 'presfilter.user_id', searchable: false, visible: false},
                     {data: 'created_at', name: 'created_at', sClass: 'dt-center', width: '70px'},
                     {data: 'equipment', name: 'presfilter.equipment', sClass: 'dt-center'},
                     {data: 'problem', name: 'presfilter.problem', searchable: false, sClass: 'dt-center'},
@@ -411,7 +84,10 @@
                         data: 'acknowledgment',
                         render: function (data, type, row) {
                             if (data === 1) {
-                                return '<i class="fas fa-check-circle text-success"></i><br><small>' + row.updated_at + '</small>';
+                                return `
+                                    <i class="fas fa-check-circle text-success"></i><br>
+                                    <small>${row.updated_at || ''}</small>`;
+                                ;
                             } else {
                                 return '<i class="fas fa-clock text-warning"></i>';
                             }
@@ -420,24 +96,35 @@
                     },
                     {data: 'resolved', name: 'presfilter.resolved', sClass: 'dt-center'},
                     {data: 'employee_name', name: 'presfilter.employee_name', searchable: false, sClass: 'dt-center'},
+                    {data: 'reason', name: 'presfilter.reason', sClass: 'dt-center'},
+
                     {
                         data: null,
                         orderable: false,
                         searchable: false,
                         render: function (data, type, row) {
+                            let parts = data.deadline.split('-');
+                            let deadlineDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+                            let currentDate = new Date();
+                            currentDate.setHours(0, 0, 0, 0);
+                            deadlineDate.setHours(0, 0, 0, 0);
 
                             return `
                             <div class="d-flex">
-                                ${userId === row.user_id && roleId['role_id'] !== 1 ?
+                                ${userId === row.user_id && ![2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(roleId)  && !row.resolved && row.acknowledgment === 1?
                                 `<button class="btn btn-success btn-sm edit-btn me-2" id="solved" data-id="${row.id}"><i class="fas fa-plus"></i></button>`
                                 : ''}
 
+                                ${userId === row.user_id && ![2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(roleId)  && !row.resolved && !row.reason && row.deadline &&  deadlineDate < currentDate?
+                                `<button class="btn btn-info btn-sm edit-btn me-2" id="reason" data-id="${row.id}"><i class="fas fa-message"></i></button>`
+                                : ''}
 
-                                ${roleId['role_id'] === 1 ?
+                                ${[1,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(roleId) && row.acknowledgment === 0?
                                 `<button class="btn btn-success btn-sm edit-btn me-2" id="success" data-id="${row.id}"><i class="fas fa-clipboard-check"></i></button>`
                                 : ''}
 
-                                ${userId === row.user_id && row.acknowledgment === 0 && roleId['role_id'] !== 1 ?
+                                ${userId === row.user_id && row.acknowledgment === 0 && ![2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(roleId) && deadlineDate >= currentDate?
                                 `<button class="btn btn-success btn-sm edit-btn" id="edit" data-id="${row.id}"><i class="fas fa-edit"></i></button>`
                                 : ''}
                                 </div>
@@ -447,6 +134,18 @@
                     }
 
                 ],
+                rowCallback: function(row, data) {
+                    let parts = data.deadline.split('-');
+                    let deadlineDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+                    let currentDate = new Date();
+                    currentDate.setHours(0, 0, 0, 0);
+                    deadlineDate.setHours(0, 0, 0, 0);
+
+                    if (deadlineDate < currentDate && !data.resolved) {
+                        $(row).addClass('deadline-passed');
+                    }
+                },
                 select: {
                     style: 'multi',
                     info: true
@@ -455,7 +154,7 @@
                 pageLength: 25,
                 autoWidth: false,
                 scrollX: true,
-                order: [[2, 'asc']],
+                order: [[1, 'desc']],
                 dom: 'rt<"bottom"ilp><"clear">',
                 "language": {
                     "lengthMenu": "Показать _MENU_ записей",
@@ -477,12 +176,12 @@
                 }
             });
             table.on('preXhr.dt', function() {
-                $('#lisok-table-container').addClass('loading');
+                $('#listok-table-container').addClass('loading');
                 $('#custom-loading').fadeIn();
             });
 
             table.on('xhr.dt', function() {
-                $('#lisok-table-container').removeClass('loading');
+                $('#listok-table-container').removeClass('loading');
                 $('#custom-loading').fadeOut();
             });
 
@@ -542,28 +241,28 @@
                         '<form id="editRequestForm">' +
                         `<input type="hidden" name="id" value="${rowData.id}">` +
                         '<div class="form-group">' +
-                        '<label>ФИО сотрудника</label>' +
-                        `<input type="text" name="fullname" class="form-control" value="${rowData.employee_name}" required>` +
+                        '<label>Камчиликни  аниқлаган мутахасиснинг Ф.И.Ш.</label>' +
+                        `<input type="text" name="fullname" class="form-control" value="${rowData.employee_name || ''}" required>` +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Оборудование</label>' +
-                        `<input type="text" name="equipment" class="form-control" value="${rowData.equipment}" required>` +
+                        '<label>Камчиликлар аниқланган ускуна, агрегат, қурилма, бино ёки иншоот</label>' +
+                        `<input type="text" name="equipment" class="form-control" value="${rowData.equipment || ''}" required>` +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Проблема</label>' +
-                        `<textarea name="problem" class="form-control" required>${rowData.problem}</textarea>` +
+                        '<label>Аниқланган камчиликлар</label>' +
+                        `<textarea name="problem" class="form-control" required>${rowData.problem || ''}</textarea>` +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Решение</label>' +
-                        `<textarea name="solution" class="form-control" required>${rowData.solution}</textarea>` +
+                        '<label>Камчиликни бартараф этиш бўйича чора-тадбирлар</label>' +
+                        `<textarea name="solution" class="form-control" required>${rowData.solution || ''}</textarea>` +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Ответственный</label>' +
-                        `<input type="text" name="responsible" class="form-control" value="${rowData.responsible_person}" required>` +
+                        '<label>Камчиликни бартараф этишга жавобгар</label>' +
+                        `<input type="text" name="responsible" class="form-control" value="${rowData.responsible_person || ''}" required>` +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Срок</label>' +
-                        `<input type="date" name="deadline" class="form-control" value="${rowData.deadline}" required>` +
+                        '<label>Камчиликни бартараф этиш муддати</label>' +
+                        `<input type="date" name="deadline" class="form-control" value="${rowData.deadline ? rowData.deadline.split('-').reverse().join('-') : ''}" required>` +
                         '</div>' +
                         '</form>',
                     buttons: {
@@ -571,7 +270,28 @@
                             text: 'Изменить',
                             btnClass: 'btn-success',
                             action: function () {
-                                let formData = $('#editRequestForm').serialize();
+                                let form = $('#editRequestForm');
+                                let formData = form.serialize();
+
+                                let isValid = true;
+
+                                form.find('input, textarea').each(function () {
+                                    if (!$(this).val()) {
+                                        isValid = false;
+                                        $(this).addClass('is-invalid');
+                                    } else {
+                                        $(this).removeClass('is-invalid');
+                                    }
+                                });
+
+                                if (!isValid) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Илтимос, барча мажбурий майдонларни тўлдиринг!',
+                                    });
+                                    return false;
+                                }
                                 $.ajax({
                                     url: '/presfilter/edit-record',
                                     type: 'POST',
@@ -606,33 +326,25 @@
                 });
             });
 
-
-            $(document).on('click', '#solved', function () {
+            $(document).on('click', '#reason', function () {
                 var rowData = table.row($(this).closest('tr')).data();
-                console.log(rowData);
-                if (!rowData) {
-                    $.alert('Не удалось найти данные строки!');
-                    return;
-                }
-
                 $.confirm({
-                    title: 'Добавить решение',
+                    title: 'Камчиликнинг бартараф этилмаганлиги сабаби:',
                     type: 'blue',
                     content: '' +
-                        '<form id="soldevRequestForm">' +
+                        '<form id="reasonRequestForm">' +
                         `<input type="hidden" name="id" value="${rowData.id}">` +
-                        '<label>Решение</label>' +
-                        `<textarea name="solution" rows="7" class="form-control" required>${rowData.resolved}</textarea>` +
-                        '</div>' +
+                        '<label>Изохни киритинг:</label>' +
+                        `<textarea name="reason" rows="8" class="form-control" required></textarea>` +
                         '</form>',
                     buttons: {
                         confirm: {
                             text: 'Добавить',
                             btnClass: 'btn-success',
                             action: function () {
-                                let formData = $('#soldevRequestForm').serialize();
+                                let formData = $('#reasonRequestForm').serialize();
                                 $.ajax({
-                                    url: '/presfilter/solved-record',
+                                    url: '{{route('presfilter.reasonRecord')}}',
                                     type: 'POST',
                                     data: formData,
                                     headers: {
@@ -664,9 +376,94 @@
                     }
                 });
             });
+
+
+
+            $(document).on('click', '#solved', function () {
+                var rowData = table.row($(this).closest('tr')).data();
+                Swal.fire({
+                    title: 'Камчилик бартараф этилдими?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xa',
+                    cancelButtonText: 'Йок'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.confirm({
+                            title: '',
+                            type: 'blue',
+                            content: '' +
+                                '<form id="solvedRequestForm">' +
+                                `<input type="hidden" name="id" value="${rowData.id}">` +
+                                '<label>Камчиликнинг бартараф этилганлиги бўйича қайд:</label>' +
+                                `<textarea name="solution" rows="7" class="form-control" required>${rowData.resolved || ''}</textarea>` +
+                                '</form>',
+                            buttons: {
+                                confirm: {
+                                    text: 'Добавить',
+                                    btnClass: 'btn-success',
+                                    action: function () {
+                                        let formData = $('#solvedRequestForm').serialize();
+                                        $.ajax({
+                                            url: '/presfilter/solved-record',
+                                            type: 'POST',
+                                            data: formData,
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                            },
+                                            success: function (response) {
+                                                if (response.status === true) {
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Данные успешно обновлены!',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                    });
+                                                    table.ajax.reload();
+                                                } else {
+                                                    $.alert('Ошибка при обновлении данных!');
+                                                }
+                                            },
+                                            error: function () {
+                                                $.alert('Ошибка сервера!');
+                                            }
+                                        });
+                                    }
+                                },
+                                cancel: {
+                                    text: 'Отмена',
+                                    btnClass: 'btn-danger'
+                                }
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            url: '{{ route('presfilter.updateAcknowledgment') }}',
+                            type: 'POST',
+                            data: { id: rowData.id, acknowledgment: 0 },
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Малумот янгиланди!',
+                                        text: 'Камчилик бартараф этилмаганлиги хакида хабар юборилди!'
+                                    });
+                                    table.ajax.reload();
+                                } else {
+                                    $.alert('Ошибка при обновлении acknowledgment!');
+                                }
+                            },
+                            error: function () {
+                                $.alert('Ошибка сервера!');
+                            }
+                        });
+                    }
+                });
+            });
         });
-
-
 
     </script>
 
@@ -684,50 +481,50 @@
                 let filterValues = savedFilters ? JSON.parse(savedFilters) : {};
 
                 $.confirm({
-                    title: 'Глобальный поиск',
+                    title: 'Глобал кидирув',
                     boxWidth: '900px',
                     useBootstrap: false,
                     type: "blue",
-                    content: "<div class='global-search'>" +
+                    content: "<div class='global-search mt-3'>" +
                         "<form id='global-search-form'>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>ФИО:</label>" +
+                        "<label class='col-md-3'>Камчиликни  аниқлаган мутахасиснинг Ф.И.Ш.:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='fio' value='" + (filterValues.fio || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Дата создание:</label>" +
+                        "<label class='col-md-3'>Сана вақт:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='date' class='form-control' name='created_at' value='" + (filterValues.created_at || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Оборудование:</label>" +
+                        "<label class='col-md-3'>Камчиликлар аниқланган ускуна, агрегат, қурилма, бино ёки иншоот:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='equipment' value='" + (filterValues.equipment || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Проблема:</label>" +
+                        "<label class='col-md-3'>Аниқланган камчиликлар:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='problem' value='" + (filterValues.problem || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Решение проблемы :</label>" +
+                        "<label class='col-md-3'>Камчиликни бартараф этиш бўйича чора-тадбирлар:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='solution' value='" + (filterValues.solution || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Ответсвенный:</label>" +
+                        "<label class='col-md-3'>Камчиликни бартараф этишга жавобгар:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='responsible_person' value='" + (filterValues.responsible_person || '') + "'>" +
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Срок:</label>" +
+                        "<label class='col-md-3'>Камчиликни бартараф этиш муддати:</label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<div class='d-flex'>" +
                         "<input type='date' class='form-control me-2' name='deadline_from' value='" + (filterValues.deadline_from || '') + "'>" +
@@ -736,15 +533,25 @@
                         "</div>" +
                         "</div>" +
                         "<div class='row align-items-center mb-3'>" +
-                        "<label class='col-md-3'>Решено: </label>" +
+                        "<label class='col-md-3'>Камчиликнинг бартараф этилганлиги бўйича қайд: </label>" +
                         "<div class='col-md-6 search-input'>" +
                         "<input type='text' class='form-control' name='resolved' value='" + (filterValues.resolved || '') + "'>" +
+                        "</div>" +
+                        "</div>" +
+                        "<div class='row align-items-center mb-3'>" +
+                        "<label class='col-md-3'>Камчиликнинг кориб чикилганлиги: </label>" +
+                        "<div class='col-md-6 search-input'>" +
+                        "<select class='form-control' name='acknowledgment'>" +
+                        "<option value=''>Хаммаси</option>" +
+                        "<option value='1'" + (filterValues.acknowledgment === '1' ? ' selected' : '') + ">Кориб чикилган</option>" +
+                        "<option value='0'" + (filterValues.acknowledgment === '0' ? ' selected' : '') + ">Кориб чикилмаган</option>" +
+                        "</select>" +
                         "</div>" +
                         "</div>" +
                         "</form>" +
                         "</div>",
                     buttons: {
-                        ПОИСК: {
+                        Қидирув: {
                             btnClass: 'btn-green',
                             action: function() {
                                 var filters = $('#global-search-form').serializeArray();
@@ -754,18 +561,19 @@
                                 });
 
                                 localStorage.setItem('globalFilters', JSON.stringify(filterObject));
-                                $('#lisok-table').DataTable().ajax.reload(null, false);
+                                $('#listok-table').DataTable().ajax.reload(null, false);
                             },
                         },
-                        ОТМЕНА: {btnClass: 'btn-danger'},
+                        Оркага: {btnClass: 'btn-danger'},
                     },
                 });
             });
+
             $('#clear-filter-btn').on('click', function () {
                 $('#global-search-form input').val('');
                 $('#global-search-form select').val('').trigger('change');
 
-                var table = $('#lisok-table').DataTable();
+                var table = $('#listok-table').DataTable();
                 table.ajax.params = {};
                 table.search('').columns().search('');
                 table.ajax.reload();
@@ -773,29 +581,28 @@
                 localStorage.removeItem('globalFilters');
             });
         });
-
-
     </script>
+
     <script>
         $('#familiarizationButton').on('click', function() {
-            let table = $('#lisok-table').DataTable();
+            let table = $('#listok-table').DataTable();
             let selectedRows = table.rows('.selected').data();
             if (selectedRows.length === 0) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Пожалуйста, выберите элемент для ознакомления.',
+                    title: 'Илтимос, кориб чикиш учун елементни танланг!',
                     confirmButtonText: 'OK'
                 });
                 return;
             }
 
             Swal.fire({
-                title: 'Вы уверены, что ознакомлени с выбранными элементами?',
-                text: "Эти элементы будут ознакомлени!",
+                title: 'Танланган элементлар билан таниш еканлигингизга ишончингиз комилми?',
+                text: "",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Потвердить',
-                cancelButtonText: 'Отмена',
+                confirmButtonText: 'Xa',
+                cancelButtonText: 'Йок',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -813,7 +620,7 @@
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Элементы успешно ознакомлении.',
+                                title: 'Танланган камчиликлар билан танишилди!',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -835,76 +642,176 @@
     <script>
         $(document).ready(function () {
             $('#createRequest').on('click', function () {
-                let table = $('#lisok-table').DataTable();
+                let table = $('#listok-table').DataTable();
                 $.confirm({
-                    title: 'Создание запроса',
+                    title: 'Аникланган камчиликни бириктириш',
                     type: 'blue',
                     content: '' +
                         '<form id="createRequestForm">' +
                         '<div class="form-group">' +
-                        '<label>ФИО сотрудника</label>' +
+                        "<label>Камчиликни  аниқлаган мутахасиснинг Ф.И.Ш.:</label>" +
                         '<input type="text" name="fullname" class="form-control" required>' +
                         '</div>' +
-                        '<label>Оборудование</label>' +
+                        '<div class="form-group">' +
+                        '<label>Камчиликлар аниқланган ускуна, агрегат, қурилма, бино ёки иншоот:</label>' +
                         '<input type="text" name="equipment" class="form-control" required>' +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Проблема</label>' +
+                        '<label>Аниқланган камчиликлар:</label>' +
                         '<textarea name="problem" class="form-control" required></textarea>' +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Решение</label>' +
+                        '<label>Камчиликни бартараф этиш бўйича чора-тадбирлар:</label>' +
                         '<textarea name="solution" class="form-control" required></textarea>' +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Ответственный</label>' +
+                        '<label>Камчиликни бартараф этишга жавобгар:</label>' +
                         '<input type="text" name="responsible" class="form-control" required>' +
                         '</div>' +
                         '<div class="form-group">' +
-                        '<label>Срок</label>' +
+                        '<label>Камчиликни бартараф этиш муддати:</label>' +
                         '<input type="date" name="deadline" class="form-control" required>' +
                         '</div>' +
                         '</form>',
                     buttons: {
                         confirm: {
-                            text: 'Создать',
+                            text: 'Яратиш',
                             btnClass: 'btn-success',
                             action: function () {
-                                let formData = $('#createRequestForm').serialize();
+                                let form = $('#createRequestForm');
+                                let isValid = true;
+
+                                form.find('input, textarea').each(function () {
+                                    if (!$(this).val()) {
+                                        isValid = false;
+                                        $(this).addClass('is-invalid');
+                                    } else {
+                                        $(this).removeClass('is-invalid');
+                                    }
+                                });
+
+                                if (!isValid) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Хатолик',
+                                        text: 'Илтимос, барча мажбурий майдонларни тўлдиринг!',
+                                    });
+                                    return false;
+                                }
+
+                                let deadline = $('input[name="deadline"]').val();
+                                let today = new Date();
+                                let deadlineDate = new Date(deadline);
+                                today.setHours(0, 0, 0, 0);
+                                deadlineDate.setHours(0, 0, 0, 0);
+                                if (deadlineDate < today) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Ошибка',
+                                        text: 'Срок не может быть раньше сегодняшнего дня!',
+                                    });
+                                    return false;
+                                }
+
+                                let formData = form.serializeArray();
+                                formData.push({ name: 'roleId', value: roleId });
+
                                 $.ajax({
                                     url: '/presfilter/create-record',
                                     type: 'POST',
-                                    data: formData,
+                                    data: $.param(formData),
                                     headers: {
                                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                     },
                                     success: function (response) {
                                         Swal.fire({
                                             icon: 'success',
-                                            title: 'Элементы успешно добавлени!',
+                                            title: 'Элементы успешно добавлены!',
                                             showConfirmButton: false,
                                             timer: 1500
                                         });
-                                        table.ajax.reload();                                    },
+                                        table.ajax.reload();
+                                    },
                                     error: function (xhr) {
-                                        $.alert('Ошибка при создании запроса: ' + xhr.responseText);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Ошибка',
+                                            text: 'Ошибка при создании запроса: ' + xhr.responseText,
+                                        });
                                     }
                                 });
                             }
-
                         },
                         cancel: {
-                            text: 'Отмена',
+                            text: 'Оркага',
                             btnClass: 'btn-danger'
                         }
                     }
                 });
             });
         });
+    </script>
 
+    <script>
+        $('#deleteButton').on('click', function() {
+            let table = $('#listok-table').DataTable();
+            let selectedRows = table.rows('.selected').data();
+            if (selectedRows.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Илтимос, Ўчириш учун елементни танланг',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Хакикатдан хам танлаган елементларни Ўчириб ташламокчимисз?',
+                text: "Бу элементлар бутунлай очириб ташланади!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Удалить',
+                cancelButtonText: 'Отмена',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let ids = [];
+                    selectedRows.each(function(row) {
+                        ids.push(row.id);
+                    });
+                    let bronNum = 0
+                    $.ajax({
+                        url: "{{ route('presfilter.deleteRecord') }}",
+                        type: 'DELETE',
+                        data: {
+                            ids: ids,
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Элементы успешно удалены.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            table.ajax.reload();
+                            bronNum += 1
+                        },
+                        error: function(error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Произошла ошибка при удалении.',
+                                text: error.responseText
+                            });
+                        }
+                    });
+                }
+            });
+        });
     </script>
 
 @endsection
+@section('header_title', 'Участок прсс-фильтров')
 
 @section('content')
     <div id="room-index">
@@ -915,14 +822,18 @@
                         <div class="card-nav d-flex justify-content-between align-items-center">
                             <div class="btn-group me-5" role="group" aria-label="Basic example">
                                 <div class="btn-group me-3" role="group" aria-label="Basic example">
-                                    @if($roleId->role_id != 1)
-                                    <button id="createRequest" class="btn btn-outline-primary rounded me-2">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                                    @if($roleId !== null && !in_array($roleId, [2,3,4,5,6,7,8,9,10,11,12,13,14,15]))
+                                        <button id="createRequest" class="btn btn-outline-primary rounded me-2">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     @endif
 
-                                    @if($roleId->role_id == 1)
-                                        <button id="familiarizationButton" type="button" class="btn btn-outline-success rounded">
+
+                                    @if($roleId === 1)
+                                        <button id="deleteButton" type="button" class="btn btn-outline-danger rounded">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        <button id="familiarizationButton" type="button" class="btn btn-outline-success rounded me-2">
                                             <i class="fas fa-check-circle"></i>
                                         </button>
                                     @endif
@@ -943,22 +854,25 @@
                             <div id="custom-loading">
                                 <div class="spinner"></div>
                             </div>
-                            <table class="table" id="listok-table" style="width: 100%">
+                            <table class="table bg-gradient-info table-hover dataTable row-border" id="listok-table" style="width: 100%">
                                 <thead>
-                                <tr class="data-tr">
+                                <tr class="data-tr" style="text-align: center; vertical-align: middle;">
+                                    <th></th>
                                     <th></th>
                                     <th class="non_searchable">ID</th>
-                                    <th style="white-space: nowrap;">Дата</th>
-                                    <th>Оборудование</th>
-                                    <th class="non_searchable">Проблема</th>
-                                    <th>Решение проблемы</th>
-                                    <th>Ответсвенный</th>
-                                    <th>Срок</th>
-                                    <th>Ознакомление</th>
-                                    <th>Решено</th>
-                                    <th>ФИО сотрудника</th>
-                                    <th>Action</th>
-
+                                    <th style="white-space: nowrap;">Сана вақт</th>
+                                    <th>Камчиликлар аниқланган ускуна, агрегат, қурилма, бино ёки иншоот</th>
+                                    <th class="non_searchable">Аниқланган камчиликлар</th>
+                                    <th>Камчиликни бартараф этиш бўйича чора-тадбирлар</th>
+                                    <th>Камчиликни бартараф этишга жавобгар</th>
+                                    <th>Камчиликни бартараф этиш муддати</th>
+                                    <th>Участка бошлиғининг танишганлиги бўйича қайд</th>
+                                    <th>Камчиликнинг бартараф этилганлиги бўйича қайд</th>
+                                    <th>Камчиликни  аниқлаган мутахасиснинг Ф.И.Ш.</th>
+                                    <th>Камчилик бартараф этилмаганининг сабаби</th>
+                                    @if($roleId !== 2)
+                                        <th>Ходисалар</th>
+                                    @endif
                                 </tr>
                                 </thead>
                                 <tbody></tbody>

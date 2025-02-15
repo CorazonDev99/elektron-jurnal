@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\Sectors\DC1Controller;
 use App\Http\Controllers\Sectors\ASUTPController;
 use App\Http\Controllers\Sectors\ESController;
@@ -19,21 +18,102 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Illuminate\Support\Facades\Session;
+
+use App\Http\Controllers\Reports\ASUTPReportController;
+use App\Http\Controllers\Reports\DC1ReportController;
+use App\Http\Controllers\Reports\ESReportController;
+use App\Http\Controllers\Reports\FSOReportController;
+use App\Http\Controllers\Reports\MolibdenReportController;
+use App\Http\Controllers\Reports\PNS1AReportController;
+use App\Http\Controllers\Reports\PNS2AReportController;
+use App\Http\Controllers\Reports\PresFilterReportController;
+use App\Http\Controllers\Reports\ReagentReportController;
+use App\Http\Controllers\Reports\RMUReportController;
+use App\Http\Controllers\Reports\Sector1ReportController;
+use App\Http\Controllers\Reports\Sector2ReportController;
+use App\Http\Controllers\Reports\UdiiReportController;
+use App\Http\Controllers\Reports\UdipReportController;
+use App\Http\Controllers\Reports\UiifReportController;
+use Illuminate\Support\Facades\DB;
+
+
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth/login');
 });
 
 require __DIR__.'/auth.php';
+Route::post('/get-report-by-period-asutp', [ASUTPReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-asutp', [ASUTPReportController::class, 'getData']);
+Route::auto('/asutp-report', ASUTPReportController::class);
+
+
+Route::post('/get-report-by-period-dc1', [DC1ReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-dc1', [DC1ReportController::class, 'getData']);
+Route::auto('/dc1-report', DC1ReportController::class);
+
+Route::post('/get-report-by-period-ec', [ESReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-ec', [ESReportController::class, 'getData']);
+Route::auto('/ec-report', ESReportController::class);
+
+Route::post('/get-report-by-period-fso', [FSOReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-fso', [FSOReportController::class, 'getData']);
+Route::auto('/fso-report', FSOReportController::class);
+
+Route::post('/get-report-by-period-molibden', [MolibdenReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-molibden', [MolibdenReportController::class, 'getData']);
+Route::auto('/molibden-report', MolibdenReportController::class);
+
+Route::post('/get-report-by-period-pns1a', [PNS1AReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-pns1a', [PNS1AReportController::class, 'getData']);
+Route::auto('/pns1a-report', PNS1AReportController::class);
+
+Route::post('/get-report-by-period-pns2a', [PNS2AReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-pns2a', [PNS2AReportController::class, 'getData']);
+Route::auto('/pns2a-report', PNS2AReportController::class);
+
+Route::post('/get-report-by-period-presfilter', [PresFilterReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-presfilter', [PresFilterReportController::class, 'getData']);
+Route::auto('/presfilter-report', PresFilterReportController::class);
+
+Route::post('/get-report-by-period-reagent', [ReagentReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-reagent', [ReagentReportController::class, 'getData']);
+Route::auto('/reagent-report', ReagentReportController::class);
+
+Route::post('/get-report-by-period-rmu', [RMUReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-rmu', [RMUReportController::class, 'getData']);
+Route::auto('/rmu-report', RMUReportController::class);
+
+Route::post('/get-report-by-period-sector1', [Sector1ReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-sector1', [Sector1ReportController::class, 'getData']);
+Route::auto('/sector1-report', Sector1ReportController::class);
+
+Route::post('/get-report-by-period-sector2', [Sector2ReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-sector2', [Sector2ReportController::class, 'getData']);
+Route::auto('/sector2-report', Sector2ReportController::class);
+
+Route::post('/get-report-by-period-udii', [UdiiReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-udii', [UdiiReportController::class, 'getData']);
+Route::auto('/udii-report', UdiiReportController::class);
+
+Route::post('/get-report-by-period-udip', [UdipReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-udip', [UdipReportController::class, 'getData']);
+Route::auto('/udip-report', UdipReportController::class);
+
+Route::post('/get-report-by-period-uiif', [UiifReportController::class, 'getReportByPeriod']);
+Route::post('/get-data-uiif', [UiifReportController::class, 'getData']);
+Route::auto('/uiif-report', UiifReportController::class);
 
 
 #DC1
-Route::auto('dc1', DC1Controller::class);
+
 Route::post('/dc1/success-record', [DC1Controller::class, 'updateSuccess'])->name('success-record');
 Route::post('/dc1/success-records', [DC1Controller::class, 'updateRecord'])->name('success-records');
 Route::post('/dc1/create-record', [DC1Controller::class, 'createRecord'])->name('create-record');
 Route::post('/dc1/edit-record', [DC1Controller::class, 'editRecord'])->name('edit-record');
 Route::post('/dc1/solved-record', [DC1Controller::class, 'solvedRecord'])->name('solved-record');
+Route::auto('dc1', DC1Controller::class);
 
 
 #Asutp
@@ -179,20 +259,34 @@ Route::resources([
 
 
 
-Route::get('/dashboard', function (Request $request) {
-    $user_id = $request->query('user_id');
 
-    if ($user_id) {
-        $user = User::find($user_id);
+Route::post('/api/user', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if ($user) {
-            Auth::login($user);
-            return view('dashboard');
-        }
+    $credentials = $request->only('email', 'password');
+    $user = User::where('email', $credentials['email'])->first();
+
+    if (!$user || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    return redirect('/login')->withErrors(['User not found or invalid ID']);
+    // Сохраняем пользователя в сессии
+    Auth::login($user);
+    Session::put('user_id', $user->id);
+
+    return response()->json(['status' => 'success']);
 });
 
+Route::get('/dashboard', function (Request $request) {
+    if (!Auth::check()) {
+        return redirect('/login');
+    }
 
+    $user = Auth::user();
+    $roleId = $user->role_id;
 
+    return view('dashboard', compact('roleId'));
+})->name('dashboard');

@@ -11,8 +11,28 @@ class RMUController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $roleId = \DB::table('rmu')->where('id', $userId)->select('role_id')->first();
+        $roleId = \DB::table('users')->where('id', $userId)->pluck('role_id')->first();
         return view('lisok.rmu.index', compact('userId', 'roleId'));
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['error' => 'Не выбраны элементы для удаления.'], 400);
+        }
+
+        try {
+
+            \DB::table('rmu')->whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => 'Элементы успешно удалены.']);
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при удалении элементов: " . $e->getMessage());
+
+            return response()->json(['error' => 'Ошибка при удалении элементов.'], 500);
+        }
     }
 
     public function getData(Request $request)
@@ -21,7 +41,7 @@ class RMUController extends Controller
 
         $d->selectRaw("'' as `empty`, rmu.id,rmu.user_id, rmu.role_id, DATE_FORMAT(rmu.created_at, '%d-%m-%Y %H:%i') AS created_at,
                 DATE_FORMAT(rmu.updated_at, '%d-%m-%Y %H:%i') AS updated_at, rmu.equipment, rmu.problem, rmu.solution,
-                rmu.responsible_person, DATE_FORMAT(rmu.deadline, '%Y-%m-%d') AS deadline, rmu.acknowledgment, rmu.resolved, rmu.employee_name");
+                rmu.responsible_person, DATE_FORMAT(rmu.deadline, '%d-%m-%Y') AS deadline, rmu.acknowledgment, rmu.resolved, rmu.reason, rmu.employee_name");
         if ($request->filled('fio')) {
             $d->where('rmu.employee_name', 'like', '%' . $request->fio . '%');
         }
@@ -51,6 +71,9 @@ class RMUController extends Controller
         }
         if ($request->filled('resolved')) {
             $d->where('rmu.resolved', 'like', '%' . $request->resolved . '%');
+        }
+        if ($request->filled('acknowledgment')) {
+            $d->where('rmu.acknowledgment', $request->acknowledgment);
         }
 
         return DataTables::of($d)
@@ -103,6 +126,8 @@ class RMUController extends Controller
             'solution' => $request->input('solution'),
             'responsible_person' => $request->input('responsible'),
             'deadline' => $request->input('deadline'),
+            'role_id' => $request->input('roleId'),
+
             'user_id' => auth()->id(),
         ];
 
@@ -152,6 +177,42 @@ class RMUController extends Controller
 
     }
 
+
+    public function reasonRecord(Request $request)
+    {
+
+        $reasondId = $request->input('id');
+
+        \DB::table('rmu')
+            ->where('id', $reasondId)
+            ->update([
+                'reason' => $request->input('reason'),
+            ]);
+
+        return response()->json(['status' => true]);
+
+
+    }
+
+
+    public function updateAcknowledgment(Request $request)
+    {
+        $updated = \DB::table('rmu')
+            ->where('id', $request->id)
+            ->update(['acknowledgment' => $request->acknowledgment]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Оповещение отправлено!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при обновлении статуса или данные не изменились.'
+        ], 500);
+    }
 }
 
 

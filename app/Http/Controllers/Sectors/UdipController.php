@@ -11,8 +11,28 @@ class UdipController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $roleId = \DB::table('udip')->where('id', $userId)->select('role_id')->first();
+        $roleId = \DB::table('users')->where('id', $userId)->pluck('role_id')->first();
         return view('lisok.udip.index', compact('userId', 'roleId'));
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['error' => 'Не выбраны элементы для удаления.'], 400);
+        }
+
+        try {
+
+            \DB::table('udip')->whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => 'Элементы успешно удалены.']);
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при удалении элементов: " . $e->getMessage());
+
+            return response()->json(['error' => 'Ошибка при удалении элементов.'], 500);
+        }
     }
 
     public function getData(Request $request)
@@ -21,7 +41,7 @@ class UdipController extends Controller
 
         $d->selectRaw("'' as `empty`, udip.id,udip.user_id, udip.role_id, DATE_FORMAT(udip.created_at, '%d-%m-%Y %H:%i') AS created_at,
                 DATE_FORMAT(udip.updated_at, '%d-%m-%Y %H:%i') AS updated_at, udip.equipment, udip.problem, udip.solution,
-                udip.responsible_person, DATE_FORMAT(udip.deadline, '%Y-%m-%d') AS deadline, udip.acknowledgment, udip.resolved, udip.employee_name");
+                udip.responsible_person, DATE_FORMAT(udip.deadline, '%d-%m-%Y') AS deadline, udip.acknowledgment, udip.resolved, udip.reason, udip.employee_name");
         if ($request->filled('fio')) {
             $d->where('udip.employee_name', 'like', '%' . $request->fio . '%');
         }
@@ -51,6 +71,9 @@ class UdipController extends Controller
         }
         if ($request->filled('resolved')) {
             $d->where('udip.resolved', 'like', '%' . $request->resolved . '%');
+        }
+        if ($request->filled('acknowledgment')) {
+            $d->where('udip.acknowledgment', $request->acknowledgment);
         }
 
         return DataTables::of($d)
@@ -103,6 +126,8 @@ class UdipController extends Controller
             'solution' => $request->input('solution'),
             'responsible_person' => $request->input('responsible'),
             'deadline' => $request->input('deadline'),
+            'role_id' => $request->input('roleId'),
+
             'user_id' => auth()->id(),
         ];
 
@@ -150,6 +175,43 @@ class UdipController extends Controller
         return response()->json(['status' => true]);
 
 
+    }
+
+
+    public function reasonRecord(Request $request)
+    {
+
+        $reasondId = $request->input('id');
+
+        \DB::table('udip')
+            ->where('id', $reasondId)
+            ->update([
+                'reason' => $request->input('reason'),
+            ]);
+
+        return response()->json(['status' => true]);
+
+
+    }
+
+
+    public function updateAcknowledgment(Request $request)
+    {
+        $updated = \DB::table('udip')
+            ->where('id', $request->id)
+            ->update(['acknowledgment' => $request->acknowledgment]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Оповещение отправлено!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при обновлении статуса или данные не изменились.'
+        ], 500);
     }
 
 }

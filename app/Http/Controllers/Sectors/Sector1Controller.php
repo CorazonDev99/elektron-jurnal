@@ -11,8 +11,28 @@ class Sector1Controller extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $roleId = \DB::table('sector1')->where('id', $userId)->select('role_id')->first();
+        $roleId = \DB::table('users')->where('id', $userId)->pluck('role_id')->first();
         return view('lisok.sector1.index', compact('userId', 'roleId'));
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['error' => 'Не выбраны элементы для удаления.'], 400);
+        }
+
+        try {
+
+            \DB::table('sector1')->whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => 'Элементы успешно удалены.']);
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при удалении элементов: " . $e->getMessage());
+
+            return response()->json(['error' => 'Ошибка при удалении элементов.'], 500);
+        }
     }
 
     public function getData(Request $request)
@@ -21,7 +41,7 @@ class Sector1Controller extends Controller
 
         $d->selectRaw("'' as `empty`, sector1.id,sector1.user_id, sector1.role_id, DATE_FORMAT(sector1.created_at, '%d-%m-%Y %H:%i') AS created_at,
                 DATE_FORMAT(sector1.updated_at, '%d-%m-%Y %H:%i') AS updated_at, sector1.equipment, sector1.problem, sector1.solution,
-                sector1.responsible_person, DATE_FORMAT(sector1.deadline, '%Y-%m-%d') AS deadline, sector1.acknowledgment, sector1.resolved, sector1.employee_name");
+                sector1.responsible_person, DATE_FORMAT(sector1.deadline, '%d-%m-%Y') AS deadline, sector1.acknowledgment, sector1.resolved, sector1.reason, sector1.employee_name");
         if ($request->filled('fio')) {
             $d->where('sector1.employee_name', 'like', '%' . $request->fio . '%');
         }
@@ -51,6 +71,9 @@ class Sector1Controller extends Controller
         }
         if ($request->filled('resolved')) {
             $d->where('sector1.resolved', 'like', '%' . $request->resolved . '%');
+        }
+        if ($request->filled('acknowledgment')) {
+            $d->where('sector1.acknowledgment', $request->acknowledgment);
         }
 
         return DataTables::of($d)
@@ -103,6 +126,8 @@ class Sector1Controller extends Controller
             'solution' => $request->input('solution'),
             'responsible_person' => $request->input('responsible'),
             'deadline' => $request->input('deadline'),
+            'role_id' => $request->input('roleId'),
+
             'user_id' => auth()->id(),
         ];
 
@@ -150,6 +175,43 @@ class Sector1Controller extends Controller
         return response()->json(['status' => true]);
 
 
+    }
+
+
+    public function reasonRecord(Request $request)
+    {
+
+        $reasondId = $request->input('id');
+
+        \DB::table('sector1')
+            ->where('id', $reasondId)
+            ->update([
+                'reason' => $request->input('reason'),
+            ]);
+
+        return response()->json(['status' => true]);
+
+
+    }
+
+
+    public function updateAcknowledgment(Request $request)
+    {
+        $updated = \DB::table('sector1')
+            ->where('id', $request->id)
+            ->update(['acknowledgment' => $request->acknowledgment]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Оповещение отправлено!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при обновлении статуса или данные не изменились.'
+        ], 500);
     }
 
 }

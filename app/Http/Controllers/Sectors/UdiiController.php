@@ -11,8 +11,28 @@ class UdiiController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $roleId = \DB::table('udii')->where('id', $userId)->select('role_id')->first();
+        $roleId = \DB::table('users')->where('id', $userId)->pluck('role_id')->first();
         return view('lisok.udii.index', compact('userId', 'roleId'));
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['error' => 'Не выбраны элементы для удаления.'], 400);
+        }
+
+        try {
+
+            \DB::table('udii')->whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => 'Элементы успешно удалены.']);
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при удалении элементов: " . $e->getMessage());
+
+            return response()->json(['error' => 'Ошибка при удалении элементов.'], 500);
+        }
     }
 
     public function getData(Request $request)
@@ -21,7 +41,7 @@ class UdiiController extends Controller
 
         $d->selectRaw("'' as `empty`, udii.id,udii.user_id, udii.role_id, DATE_FORMAT(udii.created_at, '%d-%m-%Y %H:%i') AS created_at,
                 DATE_FORMAT(udii.updated_at, '%d-%m-%Y %H:%i') AS updated_at, udii.equipment, udii.problem, udii.solution,
-                udii.responsible_person, DATE_FORMAT(udii.deadline, '%Y-%m-%d') AS deadline, udii.acknowledgment, udii.resolved, udii.employee_name");
+                udii.responsible_person, DATE_FORMAT(udii.deadline, '%d-%m-%Y') AS deadline, udii.acknowledgment, udii.resolved, udii.reason, udii.employee_name");
         if ($request->filled('fio')) {
             $d->where('udii.employee_name', 'like', '%' . $request->fio . '%');
         }
@@ -51,6 +71,9 @@ class UdiiController extends Controller
         }
         if ($request->filled('resolved')) {
             $d->where('udii.resolved', 'like', '%' . $request->resolved . '%');
+        }
+        if ($request->filled('acknowledgment')) {
+            $d->where('udii.acknowledgment', $request->acknowledgment);
         }
 
         return DataTables::of($d)
@@ -103,6 +126,8 @@ class UdiiController extends Controller
             'solution' => $request->input('solution'),
             'responsible_person' => $request->input('responsible'),
             'deadline' => $request->input('deadline'),
+            'role_id' => $request->input('roleId'),
+
             'user_id' => auth()->id(),
         ];
 
@@ -150,6 +175,43 @@ class UdiiController extends Controller
         return response()->json(['status' => true]);
 
 
+    }
+
+
+    public function reasonRecord(Request $request)
+    {
+
+        $reasondId = $request->input('id');
+
+        \DB::table('udii')
+            ->where('id', $reasondId)
+            ->update([
+                'reason' => $request->input('reason'),
+            ]);
+
+        return response()->json(['status' => true]);
+
+
+    }
+
+
+    public function updateAcknowledgment(Request $request)
+    {
+        $updated = \DB::table('udii')
+            ->where('id', $request->id)
+            ->update(['acknowledgment' => $request->acknowledgment]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Оповещение отправлено!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при обновлении статуса или данные не изменились.'
+        ], 500);
     }
 
 }

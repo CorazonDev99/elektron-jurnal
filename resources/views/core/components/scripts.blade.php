@@ -22,8 +22,8 @@
 
 @yield('script')
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link href="{{asset('assets/mof/toastr.min.css')}}" rel="stylesheet" type="text/css"/>
+<script src="{{ asset('assets/mof/toastr.min.js') }}"></script>
 
 <script>
     $(document).ready(function () {

@@ -1,3 +1,6 @@
+
+
+
 <header id="page-topbar" class="page-topbar">
     <div class="navbar-header">
         <div class="d-flex">
@@ -22,7 +25,9 @@
                 </a>
             </div>
         </div>
-        <h3 class="text-light pt-4">@yield('header_title', 'Home')</h3>
+
+        <h5 class="text-light footer-title pt-4">@yield('header_title', '1 - ПОҒОНА ИШЛАБ ЧИҚАРИШ НАЗОРАТИ ЖУРНАЛИ')</h5>
+
 
         <div class="d-flex">
             <div class="dropdown d-inline-block">
@@ -30,35 +35,17 @@
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span
-                        class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">{{ \Illuminate\Support\Facades\Auth::user()->name }}</span>
-                    <i class="uil-angle-down d-none d-xl-inline-block font-size-15"></i>
+                        class="d-none d-xl-inline-block ms-1 fw-medium font-size-15">{{ \Illuminate\Support\Facades\Auth::user()->first_name . ' ' . \Illuminate\Support\Facades\Auth::user()->last_name }}</span>
+                    <i class="fa  fa-angle-down d-none d-xl-inline-block font-size-15"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
 
-                    <a class="dropdown-item" href="/menu">
-                        <i class="uil uil-invoice font-size-18 align-middle text-muted me-1"></i>
-                        <span class="align-middle">Menu</span>
-                    </a>
 
-                    <a class="dropdown-item" href="/users">
-                        <i class="uil uil-user-circle font-size-18 align-middle text-muted me-1"></i>
-                        <span class="align-middle">Users</span>
-                    </a>
-
-                    <a class="dropdown-item" href="/roles">
-                        <i class="uil uil-unlock-alt font-size-18 align-middle text-muted me-1"></i>
-                        <span class="align-middle">Roles</span>
-                    </a>
-
-                    <a class="dropdown-item" href="/permissions">
-                        <i class="uil uil-key-skeleton font-size-18 align-middle text-muted me-1"></i>
-                        <span class="align-middle">Permissions</span>
-                    </a>
 
                     <a class="dropdown-item" href="{{ route('logout') }}"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"></i>
-                        <span class="align-middle">Sign out</span>
+                        <i class="fa fa-sign-out-alt font-size-18 align-middle me-1 text-muted"></i>
+                        <span class="align-middle">Выход</span>
                     </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
@@ -73,14 +60,13 @@
                 <button class="btn header-item waves-effect sun p-0">
                     <input type="checkbox" class="form-check-input theme-choice" id="light-mode-switch" checked
                            style="display: none"/>
-                    <label class="form-check-label btn noti-icon waves-effect mt-0" for="light-mode-switch"><i
-                            class="uil-sun"></i></label>
+                    <label class="form-check-label btn noti-icon waves-effect mt-0" for="light-mode-switch"><i class="fa fa-sun"></i>
+                    </label>
                 </button>
                 <button class="btn header-item waves-effect moon p-0" style="display: none">
                     <input type="checkbox" class="form-check-input theme-choice" id="dark-mode-switch"
                            style="display: none"/>
-                    <label class="form-check-label btn noti-icon waves-effect mt-0" for="dark-mode-switch"><i
-                            class="uil-moon"></i></label>
+                    <label class="form-check-label btn noti-icon waves-effect mt-0" for="dark-mode-switch"><i class="fa fa-moon"></i></label>
                 </button>
             </div>
         </div>

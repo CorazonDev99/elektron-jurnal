@@ -11,8 +11,28 @@ class ASUTPController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $roleId = \DB::table('asutp')->where('id', $userId)->select('role_id')->first();
+        $roleId = \DB::table('users')->where('id', $userId)->pluck('role_id')->first();
         return view('lisok.asutp.index', compact('userId', 'roleId'));
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['error' => 'Не выбраны элементы для удаления.'], 400);
+        }
+
+        try {
+
+            \DB::table('asutp')->whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => 'Элементы успешно удалены.']);
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при удалении элементов: " . $e->getMessage());
+
+            return response()->json(['error' => 'Ошибка при удалении элементов.'], 500);
+        }
     }
 
     public function getData(Request $request)
@@ -21,7 +41,7 @@ class ASUTPController extends Controller
 
         $d->selectRaw("'' as `empty`, asutp.id,asutp.user_id, asutp.role_id, DATE_FORMAT(asutp.created_at, '%d-%m-%Y %H:%i') AS created_at,
                 DATE_FORMAT(asutp.updated_at, '%d-%m-%Y %H:%i') AS updated_at, asutp.equipment, asutp.problem, asutp.solution,
-                asutp.responsible_person, DATE_FORMAT(asutp.deadline, '%Y-%m-%d') AS deadline, asutp.acknowledgment, asutp.resolved, asutp.employee_name");
+                asutp.responsible_person, DATE_FORMAT(asutp.deadline, '%d-%m-%Y') AS deadline, asutp.acknowledgment, asutp.resolved, asutp.reason, asutp.employee_name");
         if ($request->filled('fio')) {
             $d->where('asutp.employee_name', 'like', '%' . $request->fio . '%');
         }
@@ -51,6 +71,9 @@ class ASUTPController extends Controller
         }
         if ($request->filled('resolved')) {
             $d->where('asutp.resolved', 'like', '%' . $request->resolved . '%');
+        }
+        if ($request->filled('acknowledgment')) {
+            $d->where('asutp.acknowledgment', $request->acknowledgment);
         }
 
         return DataTables::of($d)
@@ -103,6 +126,8 @@ class ASUTPController extends Controller
             'solution' => $request->input('solution'),
             'responsible_person' => $request->input('responsible'),
             'deadline' => $request->input('deadline'),
+            'role_id' => $request->input('roleId'),
+
             'user_id' => auth()->id(),
         ];
 
@@ -150,6 +175,43 @@ class ASUTPController extends Controller
         return response()->json(['status' => true]);
 
 
+    }
+
+
+    public function reasonRecord(Request $request)
+    {
+
+        $reasondId = $request->input('id');
+
+        \DB::table('asutp')
+            ->where('id', $reasondId)
+            ->update([
+                'reason' => $request->input('reason'),
+            ]);
+
+        return response()->json(['status' => true]);
+
+
+    }
+
+
+    public function updateAcknowledgment(Request $request)
+    {
+        $updated = \DB::table('asutp')
+            ->where('id', $request->id)
+            ->update(['acknowledgment' => $request->acknowledgment]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Оповещение отправлено!'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Ошибка при обновлении статуса или данные не изменились.'
+        ], 500);
     }
 
 }

@@ -4,18 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="/assets/images/logo.png">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Электронный журнал</title>
 
-    <!-- Fonts -->
-{{--    <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">--}}
-
-{{--    @vite(['resources/css/app.css', 'resources/js/app.js'])--}}
 
     <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('assets/mof/all.min.css')}}" rel="stylesheet" type="text/css"/>
+
     <link href="/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <style>
+
         .dropdown-menu i{
             width: 1.5rem;
             text-align: center;
@@ -26,9 +25,12 @@
         body {
             background-image: url('/assets/images/mbf.jpg');
             background-size: cover;
+            background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-position: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
         }
         canvas {
             position: absolute;
@@ -75,6 +77,14 @@
         const canvas = document.createElement('canvas');
         document.body.appendChild(canvas);
 
+        // Устанавливаем стиль для полного покрытия экрана
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.pointerEvents = 'none'; // Чтобы снежинки не мешали кликам
+
         const ctx = canvas.getContext('2d');
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -97,7 +107,6 @@
             }
         }
 
-        // Функция для рисования снежинок
         function drawSnowflakes() {
             ctx.clearRect(0, 0, width, height);
             snowflakes.forEach(snowflake => {
@@ -111,7 +120,6 @@
             });
         }
 
-        // Функция для обновления положения снежинок
         function updateSnowflakes() {
             snowflakes.forEach(snowflake => {
                 snowflake.y += snowflake.speed;   // Падение
@@ -123,14 +131,12 @@
             });
         }
 
-        // Анимация
         function animate() {
             drawSnowflakes();
             updateSnowflakes();
             requestAnimationFrame(animate);
         }
 
-        // Обновление размеров Canvas при изменении окна
         window.addEventListener('resize', () => {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -144,5 +150,6 @@
         };
     }
 </script>
+
 </body>
 </html>
