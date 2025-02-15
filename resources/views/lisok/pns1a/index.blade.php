@@ -279,7 +279,7 @@
                             btnClass: 'btn-success',
                             action: function () {
                                 let form = $('#editRequestForm');
-                                let formData = form.serialize();
+                                let formData = form.serializeArray();
 
                                 let isValid = true;
 

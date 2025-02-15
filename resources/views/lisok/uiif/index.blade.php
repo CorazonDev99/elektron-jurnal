@@ -401,7 +401,7 @@
                             text: 'Добавить',
                             btnClass: 'btn-success',
                             action: function () {
-                                let formData = $('#reasonRequestForm').serialize();
+                                let formData = $('#reasonRequestForm').serializeArray();
                                 $.ajax({
                                     url: '{{route('uiif.reasonRecord')}}',
                                     type: 'POST',
