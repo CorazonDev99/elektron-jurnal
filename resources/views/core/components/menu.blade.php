@@ -159,9 +159,19 @@
                         <div>
                             <a href="/reagent-report" class="dropdown-item"><i class="fa fa-hotel"></i> Участок по приготовлению реагентов</a>
                         </div>
-                    @elseif($roleId == 10 || $roleId == 24 || $roleId == 26)
+                    @elseif($roleId == 10)
                         <div>
                             <a href="/fso-report" class="dropdown-item"><i class="fa fa-hotel"></i> ФСО</a>
+                            <a href="/molibden-report" class="dropdown-item"><i class="fa fa-hotel"></i> Участок молибденовой селекции</a>
+
+                        </div>
+                    @elseif($roleId == 24)
+                        <div>
+                            <a href="/fso-report" class="dropdown-item"><i class="fa fa-hotel"></i> ФСО</a>
+
+                        </div>
+                    @elseif($roleId == 26)
+                        <div>
                             <a href="/molibden-report" class="dropdown-item"><i class="fa fa-hotel"></i> Участок молибденовой селекции</a>
 
                         </div>
@@ -169,9 +179,17 @@
                         <div>
                             <a href="/presfilter-report" class="dropdown-item"><i class="fa fa-hotel"></i> Участок пресс-фильтров</a>
                         </div>
-                    @elseif($roleId == 12 || $roleId == 27 || $roleId == 28)
+                    @elseif($roleId == 12)
                         <div>
                             <a href="/pns1a-report" class="dropdown-item"><i class="fa fa-hotel"></i> ПНС-1А</a>
+                            <a href="/pns2a-report" class="dropdown-item"><i class="fa fa-hotel"></i> ПНС-2А</a>
+                        </div>
+                    @elseif($roleId == 27)
+                        <div>
+                            <a href="/pns1a-report" class="dropdown-item"><i class="fa fa-hotel"></i> ПНС-1А</a>
+                        </div>
+                    @elseif($roleId == 28)
+                        <div>
                             <a href="/pns2a-report" class="dropdown-item"><i class="fa fa-hotel"></i> ПНС-2А</a>
                         </div>
                     @elseif($roleId == 13 || $roleId == 29)
