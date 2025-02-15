@@ -368,6 +368,19 @@
                             text: 'Отмена',
                             btnClass: 'btn-danger'
                         }
+                    },
+                    onContentReady: function () {
+                        $('input[name="deadline"]').daterangepicker({
+                            singleDatePicker: true,
+                            autoUpdateInput: false,
+                            locale: {
+                                format: 'DD-MM-YYYY',
+                                applyLabel: "Танлаш",
+                                cancelLabel: "Бекор қилиш"
+                            }
+                        }).on('apply.daterangepicker', function (ev, picker) {
+                            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+                        });
                     }
                 });
             });
@@ -812,6 +825,19 @@
                             text: 'Оркага',
                             btnClass: 'btn-danger'
                         }
+                    },
+                    onContentReady: function () {
+                        $('input[name="deadline"]').daterangepicker({
+                            singleDatePicker: true,
+                            autoUpdateInput: false,
+                            locale: {
+                                format: 'DD-MM-YYYY',
+                                applyLabel: "Танлаш",
+                                cancelLabel: "Бекор қилиш"
+                            }
+                        }).on('apply.daterangepicker', function (ev, picker) {
+                            $(this).val(picker.startDate.format('DD-MM-YYYY'));
+                        });
                     }
                 });
             });
